@@ -1,3 +1,13 @@
+<?php
+session_start();
+include_once "../includes/connect.php";
+include_once "../includes/classes/admin.php";
+
+$object = new dashboard($connect);
+
+$object->collectUserID();
+
+?>
 <!doctype html>
 <html lang="en">
 
@@ -60,25 +70,25 @@
                     </li>
                     <li>
                         <a href="questions.php">
-                            <i class="ti-user"></i>
+                            <i class="ti-help-alt"></i>
                             <p>Questions</p>
                         </a>
                     </li>
                     <li>
                         <a href="examinees.php">
-                            <i class="ti-view-list-alt"></i>
+                            <i class="ti-user"></i>
                             <p>Examinees</p>
                         </a>
                     </li>
                     <li>
                         <a href="score.php">
-                            <i class="ti-text"></i>
+                            <i class="ti-bar-chart"></i>
                             <p>Examination Scores</p>
                         </a>
                     </li>
                     <li class="active-pro">
                         <a href="logout.php">
-                            <i class="ti-export"></i>
+                            <i class="ti-power-off"></i>
                             <p>Logout</p>
                         </a>
                     </li>
@@ -112,13 +122,16 @@
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-warning text-center">
-                                                <i class="ti-server"></i>
+                                                <i class="ti-user"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
                                                 <p>Examinees</p>
-                                                105
+                                                <?php
+                                                $object->selectNoOfExaminees();
+                                                echo $object->noOfExaminees;
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
@@ -135,13 +148,16 @@
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-success text-center">
-                                                <i class="ti-wallet"></i>
+                                                <i class="ti-lock"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
                                                 <p>Authorized</p>
-                                                11
+                                                <?php
+                                                $object->selectNoOfAuthorized();
+                                                echo $object->noOfAuthorized;
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
@@ -158,13 +174,16 @@
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-danger text-center">
-                                                <i class="ti-pulse"></i>
+                                                <i class="ti-help-alt"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
                                                 <p>Questions</p>
-                                                23
+                                                <?php
+                                                $object->selectNoOfQuestions();
+                                                echo $object->noOfQuestions;
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
@@ -181,13 +200,16 @@
                                     <div class="row">
                                         <div class="col-xs-5">
                                             <div class="icon-big icon-info text-center">
-                                                <i class="ti-twitter-alt"></i>
+                                                <i class="ti-check-box"></i>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="numbers">
                                                 <p>Exams taken</p>
-                                                45
+                                                <?php
+                                                $object->selectNoOfExamsTaken();
+                                                echo $object->noOfExamsTaken;
+                                                ?>
                                             </div>
                                         </div>
                                     </div>
@@ -263,7 +285,7 @@
 
         $.notify({
             icon: 'ti-gift',
-            message: "Welcome <b>Admin</b> - Control is now in your hand."
+            message: "Welcome <b>Admin</b> - You're the master of this domain. Let's make great things happen!."
 
         }, {
             type: 'success',

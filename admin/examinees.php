@@ -1,3 +1,12 @@
+<?php
+session_start();
+include_once "../includes/connect.php";
+include_once "../includes/classes/admin.php";
+
+$object = new examinees($connect);
+$object->collectUserID();
+
+?>
 <!doctype html>
 <html lang="en">
 
@@ -60,25 +69,25 @@
                     </li>
                     <li>
                         <a href="questions.php">
-                            <i class="ti-user"></i>
+                            <i class="ti-help-alt"></i>
                             <p>Questions</p>
                         </a>
                     </li>
                     <li class="active">
                         <a href="examinees.php">
-                            <i class="ti-view-list-alt"></i>
+                            <i class="ti-user"></i>
                             <p>Examinees</p>
                         </a>
                     </li>
                     <li>
                         <a href="score.php">
-                            <i class="ti-text"></i>
+                            <i class="ti-bar-chart"></i>
                             <p>Examination Scores</p>
                         </a>
                     </li>
                     <li class="active-pro">
                         <a href="logout.php">
-                            <i class="ti-export"></i>
+                            <i class="ti-power-off"></i>
                             <p>Logout</p>
                         </a>
                     </li>
@@ -110,7 +119,7 @@
                             <div class="card">
                                 <div class="header">
                                     <h4 class="title">Examinees</h4>
-                                    <p class="category">Authorized and unauthorized Examinees</p>
+                                    <p class="category">Authorized and Unverified Examinees</p>
                                 </div>
                                 <div class="content table-responsive table-full-width">
                                     <table class="table table-striped">
@@ -118,19 +127,57 @@
                                             <th>#</th>
                                             <th>Full Name</th>
                                             <th>Email Address</th>
-                                            <th>Option B</th>
-                                            <th>Option C</th>
+                                            <th>Phone Number</th>
+                                            <th>Date of Birth</th>
+                                            <th>Gender</th>
+                                            <th>Last Institution</th>
+                                            <th>Exam Status</th>
                                             <th>Action</th>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>What are the core programming languages for Frontend?</td>
-                                                <td>React, Typescript & Git</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>HTML, CSS, & JS</td>
-                                                <td>C</td>
-                                            </tr>
+                                            <?php 
+                                            $sql = $object->selectExaminees();
+                                            $number = 1;
+                                            while ($row = $sql->fetch_assoc()) {
+                                                $examinee_id = $row["examinee_id"];
+                                                $fullname = $row["fullname"];
+                                                $email = $row["email"];
+                                                $phone_number = $row["phone_number"];
+                                                $dob = $row["dob"];
+                                                $gender = $row["gender"];
+                                                $last_institution = $row["last_institution"];
+                                                $can_take_exam = $row["can_take_exam"];
+                                                $text_color;
+
+                                                switch ($can_take_exam) {
+                                                    case 1:
+                                                        $can_take_exam = 'Eligible';
+                                                        $text_color = "success";
+                                                        break;
+                                                    case 0:
+                                                        $can_take_exam = 'Not eligible';
+                                                        $text_color = 'danger';
+                                                        break;
+                                                }
+
+                                                echo "
+                                                    <tr>
+                                                        <td>$number</td>
+                                                        <td>$fullname</td>
+                                                        <td>$email</td>
+                                                        <td>$phone_number</td>
+                                                        <td>$dob</td>
+                                                        <td>$gender</td>
+                                                        <td>$last_institution</td>
+                                                        <td class='text-$text_color'>$can_take_exam</td>
+                                                        <td>
+                                                            <a href='process-eligiblity.php?change_exam_status=$can_take_exam&examinee_id=$examinee_id' class='btn btn-info btn-sm'>Change Exam Status</a>
+                                                        </td>
+                                                    </tr>  
+                                                ";
+                                                $number++;
+                                            }
+                                            ?>
                                         </tbody>
                                     </table>
 

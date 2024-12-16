@@ -1,3 +1,18 @@
+<?php
+session_start();
+include_once "../includes/connect.php";
+include_once "../includes/classes/admin.php";
+
+$object = new questions($connect);
+
+$object->collectUserID();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $object->collectFormInputs();
+    $object->insertIntoDB();
+}
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -60,25 +75,25 @@
                     </li>
                     <li class="active">
                         <a href="questions.php">
-                            <i class="ti-user"></i>
+                            <i class="ti-help-alt"></i>
                             <p>Questions</p>
                         </a>
                     </li>
                     <li>
                         <a href="examinees.php">
-                            <i class="ti-view-list-alt"></i>
+                            <i class="ti-user"></i>
                             <p>Examinees</p>
                         </a>
                     </li>
                     <li>
                         <a href="score.php">
-                            <i class="ti-text"></i>
+                            <i class="ti-bar-chart"></i>
                             <p>Examination Scores</p>
                         </a>
                     </li>
                     <li class="active-pro">
                         <a href="logout.php">
-                            <i class="ti-export"></i>
+                            <i class="ti-power-off"></i>
                             <p>Logout</p>
                         </a>
                     </li>
@@ -110,48 +125,64 @@
                             <div class="card">
                                 <div class="header">
                                     <h4 class="title">Exam Questions</h4>
-                                    <p class="category">Questions Examinees are meant to answer</p>
+                                    <p class="category">Challenges Awaiting Examinees</p>
                                 </div>
                                 <div class="content table-responsive table-full-width">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Ques. No</th>
-                                            <th>Question</th>
-                                            <th>Option A</th>
-                                            <th>Option B</th>
-                                            <th>Option C</th>
-                                            <th>Option D</th>
-                                            <th>Answer</th>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td>What are the core programming languages for Frontend?</td>
-                                                <td>React, Typescript & Git</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>HTML, CSS, & JS</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>C</td>
-                                            </tr>
-                                            <tr>
-                                                <td>3</td>
-                                                <td>What are the core programming languages for Frontend?</td>
-                                                <td>React, Typescript & Git</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>HTML, CSS, & JS</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>C</td>
-                                            </tr>
-                                            <tr>
-                                                <td>4</td>
-                                                <td>What are the core programming languages for Frontend?</td>
-                                                <td>React, Typescript & Git</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>HTML, CSS, & JS</td>
-                                                <td>Git, Github, HTML & CSS</td>
-                                                <td>C</td>
-                                            </tr>
-                                        </tbody>
+                                    <?php
+                                    $sql = $object->selectExamQuestions();
+
+                                    if (!$sql->num_rows > 0) {
+                                        echo "
+                                            <div class='container'>
+                                                <div class='alert alert-info'>
+                                                    <span>No question has been added</span>
+                                                </div>
+                                            </div>
+                                        ";
+                                    } else {
+                                        echo '
+                                            <table class="table table-striped">
+                                            <thead>
+                                                <th>#</th>
+                                                <th>Question</th>
+                                                <th>Option A</th>
+                                                <th>Option B</th>
+                                                <th>Option C</th>
+                                                <th>Option D</th>
+                                                <th>Answer</th>
+                                            </thead>
+                                            <tbody>
+                                        ';
+                                    }
+
+                                    ?>
+                                    <?php
+                                    $number = 1;
+
+                                    while ($result = $sql->fetch_assoc()) {
+                                        $ques_id = $result["ques_id"];
+                                        $ques = $result["ques"];
+                                        $option_a = $result["option_a"];
+                                        $option_b = $result["option_b"];
+                                        $option_c = $result["option_c"];
+                                        $option_d = $result["option_d"];
+                                        $answer = $result["answer"];
+
+                                        echo "
+                                                    <tr>
+                                                        <td>$number</td>
+                                                        <td>$ques</td>
+                                                        <td>$option_a</td>
+                                                        <td>$option_b</td>
+                                                        <td>$option_c</td>
+                                                        <td>$option_d</td>
+                                                        <td>$answer</td>
+                                                    </tr>
+                                                ";
+                                        $number++;
+                                    }
+                                    ?>
+                                    </tbody>
                                     </table>
 
                                 </div>
@@ -163,15 +194,15 @@
                             <div class="card card-plain">
                                 <div class="header">
                                     <h4 class="title">Add Question</h4>
-                                    <p class="category">Add a question for Examinees</p>
+                                    <p class="category">Create New Challenge for Examinees</p>
                                 </div>
                                 <div class="content">
-                                    <form>
+                                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Question</label>
-                                                    <textarea rows="5" class="form-control border-input" placeholder="Here can be your question" required></textarea>
+                                                    <textarea rows="5" name="question" class="form-control border-input" placeholder="Here can be your question" required></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -180,13 +211,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Option A</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Enter Option A" required>
+                                                    <input type="text" class="form-control border-input" name="option_a" placeholder="Enter Option A" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="option-B">Option B</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Enter Option B" required>
+                                                    <input type="text" class="form-control border-input" name="option_b" placeholder="Enter Option B" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -195,13 +226,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Option C</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Enter Option C" required>
+                                                    <input type="text" class="form-control border-input" name="option_c" placeholder="Enter Option C" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="option-D">Option D</label>
-                                                    <input type="text" class="form-control border-input" placeholder="Enter Option D" required>
+                                                    <input type="text" class="form-control border-input" name="option_d" placeholder="Enter Option D" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -210,7 +241,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Answer</label>
-                                                    <select name="" id="" class="form-control border-input" required>
+                                                    <select name="answer" class="form-control border-input" required>
                                                         <option value="">--Select Answer--</option>
                                                         <option value="A">A</option>
                                                         <option value="B">B</option>
@@ -244,7 +275,7 @@
 
 <!--   Core JS Files   -->
 <script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
-<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../Bootstrap/bootstrap.bundle.min.js" type="text/javascript"></script>
 
 <!--  Checkbox, Radio & Switch Plugins -->
 <script src="assets/js/bootstrap-checkbox-radio.js"></script>

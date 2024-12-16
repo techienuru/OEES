@@ -1,0 +1,36 @@
+/********** Template CSS **********/
+:root {
+  --primary: #eb1616;
+  --secondary: #191c24;
+  --light: #6c7293;
+  --dark: #000000;
+}
+body {
+  background-color: #000000;
+}
+#inner-container {
+  background-color: #191c24;
+}
+#inner-container > form > div > a {
+  color: #e69c00;
+}
+#inner-container > form > div > a:hover {
+  color: #ffbe33;
+}
+#inner-container input,
+#inner-container select {
+  background-color: #000000;
+  border: none;
+}
+#inner-container input:focus,
+#inner-container select:focus {
+  box-shadow: 0px 0px 3px #e69c00;
+}
+#inner-container label {
+  color: #6c7293;
+}
+#inner-container button {
+  background-color: #e69c00;
+  color: white;
+  font-weight: bolder;
+}

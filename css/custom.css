@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&display=swap");
+
+body {
+  background-color: rgba(128, 128, 128, 0.445);
+}
+
+#hamburger {
+  cursor: pointer;
+}
+#hamburger > div {
+  background-color: white;
+  width: 30px;
+  height: 4px;
+  margin: 0px 0px 4px 0px;
+}
+
+#hamburger:hover #hamburger-dropdown {
+  opacity: 1;
+}
+
+#hamburger-dropdown {
+  opacity: 0;
+  top: 100%;
+  right: 0px;
+  background-color: #006775;
+  color: white;
+  z-index: 1;
+}
+#hamburger-dropdown > li {
+  list-style-type: none;
+  padding: 10px;
+  min-width: 100%;
+  max-width: 100%;
+  border-bottom: 1px solid #00c896;
+}
+#hamburger-dropdown > li > a {
+  text-decoration: none;
+  color: white;
+}
+
+#inner-section {
+  font-family: "Dancing Script", cursive;
+}
+
+/* Navbar For Admin Pages Start */
+.navigation_section {
+  background-color: #b4acacab;
+  padding: 15px 0 15px 0;
+  text-align: center;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin: 90px 0px 0px 0px;
+}
+.navigation_section > .container > div > a {
+  color: #518071;
+  transition: all 0.2s;
+}
+.navigation_section > .container > div > a:hover {
+  border-bottom: 2px solid #00c896;
+}
+.navigation_section > .container > div > a > i {
+  color: #00c896;
+}
+.active {
+  border-bottom: 2px solid #00c896;
+}
+/* Navbar For Admin Pages End */
+
+/* Modified Navbar For Doctor and Nurse Pages */
+#modified_navigation_section > a {
+  color: #aca7cb;
+  transition: all 0.2s;
+}
+#modified_navigation_section > a:hover {
+  border-bottom: 2px solid #00c896;
+}
+#modified_navigation_section > a > i {
+  color: #00c896;
+}
+.active {
+  border-bottom: 2px solid #00c896;
+}
+
+.form-control:focus {
+  border: none;
+  box-shadow: 0px 0px 3px #00c896;
+}

@@ -3,9 +3,13 @@ session_start();
 include_once "../includes/connect.php";
 include_once "../includes/classes/examinee.php";
 
-$object = new dashboard($connect);
+$object = new edit_profile($connect);
 
 $object->collectUserID();
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $object->processEditProfile();
+}
 
 ?>
 <!doctype html>
@@ -17,7 +21,7 @@ $object->collectUserID();
     <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-    <title>OEES - Examinee Dashboard</title>
+    <title>OEES - Make changes to your profile</title>
 
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -62,7 +66,7 @@ $object->collectUserID();
                 </div>
 
                 <ul class="nav">
-                    <li class="active">
+                    <li>
                         <a href="dashboard.php">
                             <i class="ti-dashboard"></i>
                             <p>Dashboard</p>
@@ -80,7 +84,7 @@ $object->collectUserID();
                             <p>Exam Score</p>
                         </a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="edit-profile.php">
                             <i class="ti-pencil"></i>
                             <p>Edit Profile</p>
@@ -106,7 +110,7 @@ $object->collectUserID();
                             <span class="icon-bar bar2"></span>
                             <span class="icon-bar bar3"></span>
                         </button>
-                        <a class="navbar-brand" href="#">Dashboard</a>
+                        <a class="navbar-brand" href="#">Edit Profile</a>
                     </div>
 
                 </div>
@@ -116,87 +120,24 @@ $object->collectUserID();
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-lg-4 col-md-5">
-                            <div class="card card-user">
-                                <div class="image">
-                                    <img src="assets/img/background.jpg" alt="..." />
-                                </div>
-                                <div class="content">
-                                    <div class="author">
-                                        <img class="avatar border-white" src="assets/img/faces/face-2.png" alt="..." />
-                                        <h4 class="title">
-                                            <?php echo $object->fullname; ?>
-                                            <br />
-                                            <a href="#">
-                                                <small>
-                                                    <?php echo $object->email; ?>
-                                                </small>
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <p class="description text-center">
-                                        "Excel with confidence,
-                                        <br>
-                                        no doubts.
-                                        <br>
-                                        Ready to start your journey to success?"
-                                    </p>
-                                </div>
-                                <hr>
-                                <div class="text-center">
-                                    <div class="row">
-                                        <div class="col-md-3 col-md-offset-1">
-                                            <h5>
-                                                <?php
-                                                $object->noOfExamsTaken();
-                                                echo $object->noOfExamsTaken;
-                                                ?>
-                                                <br />
-                                                <small>Exams</small>
-                                            </h5>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <h5>
-                                                <?php
-                                                $object->noOfExamsPassed();
-                                                echo $object->noOfExamsPassed;
-                                                ?>
-                                                <br />
-                                                <small>Passed</small>
-                                            </h5>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <h5>
-                                                <?php
-                                                $object->noOfExamsFailed();
-                                                echo $object->noOfExamsFailed;
-                                                ?>
-                                                <br />
-                                                <small>Failed</small>
-                                            </h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-8 col-md-7">
+                        <div class="col-12">
                             <div class="card">
                                 <div class="header">
-                                    <h4 class="title">Profile</h4>
+                                    <h4 class="title">Make Changes to your Profile</h4>
                                 </div>
                                 <div class="content">
-                                    <form>
+                                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Full Name</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->fullname; ?>">
+                                                    <label>Fullname</label>
+                                                    <input type="text" class="form-control border-input" name="fullname" value="<?php echo $object->fullname; ?>" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Email</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->email; ?>">
+                                                    <label for="exampleInputEmail1">Email address</label>
+                                                    <input type="email" class="form-control border-input" name="email" value="<?php echo $object->email; ?>" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -205,13 +146,13 @@ $object->collectUserID();
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Phone Number</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->phone_number; ?>">
+                                                    <input type="text" class="form-control border-input" name="phone_number" value="<?php echo $object->phone_number; ?>" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Date Of Birth</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->dob; ?>">
+                                                    <label for="exampleInputEmail1">Date Of Birth</label>
+                                                    <input type="date" class="form-control border-input" name="dob" value="<?php echo $object->dob; ?>" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -220,18 +161,35 @@ $object->collectUserID();
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Gender</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->gender; ?>">
+                                                    <input type="text" class="form-control border-input" name="gender" value="<?php echo $object->phone_number; ?>" required>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>Last Institution Attended</label>
-                                                    <input type="text" class="form-control border-input" disabled placeholder="Company" value="<?php echo $object->last_institution; ?>">
+                                                    <label for="exampleInputEmail1">Last Institution</label>
+                                                    <input type="text" class="form-control border-input" name="last_institution" value="<?php echo $object->last_institution; ?>" required>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="clearfix"></div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Previous Password</label>
+                                                    <input type="password" class="form-control border-input" name="previous_password" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exampleInputEmail1">New password</label>
+                                                    <input type="password" class="form-control border-input" name="new_password" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-info btn-fill btn-wd">Update Profile</button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -250,7 +208,6 @@ $object->collectUserID();
 </body>
 
 <!--   Core JS Files   -->
-<script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
 <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
 
 <!--  Checkbox, Radio & Switch Plugins -->
@@ -267,22 +224,5 @@ $object->collectUserID();
 
 <!-- Paper Dashboard DEMO methods, don't include it in your project! -->
 <script src="assets/js/demo.js"></script>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-
-        demo.initChartist();
-
-        $.notify({
-            icon: 'ti-gift',
-            message: "Welcome <b><?php echo $object->fullname; ?></b> - <?php echo $object->exam_status; ?>."
-
-        }, {
-            type: 'success',
-            timer: 4000
-        });
-
-    });
-</script>
 
 </html>

@@ -1,0 +1,11 @@
+*****   OEES - Online Examination System    *****
+
+=> ADMIN LOGIN DETAILS
+Email: admin@gmail.com
+Password: admin@1
+
+As for the Examinee, he or she will recieve the password in the email he used in signing up
+
+=> One is:
+ibrahimnurudeenshehu1447
+3676

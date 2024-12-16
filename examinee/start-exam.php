@@ -1,12 +1,20 @@
 <?php
 session_start();
 include_once "../includes/connect.php";
-include_once "../includes/classes/admin.php";
+include_once "../includes/classes/examinee.php";
 
-$object = new scores($connect);
+$object = new start_exam($connect);
 
 $object->collectUserID();
+
+if ($object->isExamineeEligible()) {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $object->processExam();
+    }
+}
+
 ?>
+
 <!doctype html>
 <html lang="en">
 
@@ -16,7 +24,7 @@ $object->collectUserID();
     <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
-    <title>OEES - Authorized Examinee Score</title>
+    <title>OEES - Start Your Entrance Exam</title>
 
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
     <meta name="viewport" content="width=device-width" />
@@ -40,6 +48,59 @@ $object->collectUserID();
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
     <link href="assets/css/themify-icons.css" rel="stylesheet">
+
+    <style>
+        .start-exam-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .question h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 5px 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #00c896;
+            border: none;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #518071;
+        }
+    </style>
 
 </head>
 
@@ -68,21 +129,21 @@ $object->collectUserID();
                         </a>
                     </li>
                     <li>
-                        <a href="questions.php">
-                            <i class="ti-help-alt"></i>
-                            <p>Questions</p>
+                        <a href="take-exam.php">
+                            <i class="ti-pencil-alt"></i>
+                            <p>Take Exam</p>
                         </a>
                     </li>
                     <li>
-                        <a href="examinees.php">
-                            <i class="ti-user"></i>
-                            <p>Examinees</p>
+                        <a href="exam-score.php">
+                            <i class="ti-stats-up"></i>
+                            <p>Exam Score</p>
                         </a>
                     </li>
-                    <li class="active">
-                        <a href="score.php">
-                            <i class="ti-bar-chart"></i>
-                            <p>Examination Scores</p>
+                    <li>
+                        <a href="edit-profile.php">
+                            <i class="ti-pencil"></i>
+                            <p>Edit Profile</p>
                         </a>
                     </li>
                     <li class="active-pro">
@@ -105,7 +166,7 @@ $object->collectUserID();
                             <span class="icon-bar bar2"></span>
                             <span class="icon-bar bar3"></span>
                         </button>
-                        <a class="navbar-brand" href="#">Examination Scores</a>
+                        <a class="navbar-brand" href="#">Start Entrance Exam</a>
                     </div>
 
                 </div>
@@ -113,50 +174,37 @@ $object->collectUserID();
 
 
             <div class="content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="header">
-                                    <h4 class="title">Examination Scores</h4>
-                                    <p class="category">Examinees' Performance in Entrance Exams</p>
-                                </div>
-                                <div class="content table-responsive table-full-width">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>#</th>
-                                            <th>Full Name</th>
-                                            <th>Email Address</th>
-                                            <th class="text-center">Score</th>
-                                            <th class="text-center">Total Questions Answered</th>
-                                            <th class="text-center">Correct Answer(s)</th>
-                                            <th>Date</th>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $sql = $object->selectExamineesScores();
-                                            while ($row = $sql->fetch_assoc()) { ?>
-                                                <tr>
-                                                    <td><?php echo $row["exams_id"] ?></td>
-                                                    <td><?php echo $row["fullname"] ?></td>
-                                                    <td><?php echo $row["email"] ?></td>
-                                                    <td class="text-center"><?php echo $row["score"] ?></td>
-                                                    <td class="text-center"><?php echo $row["total_questions"] ?></td>
-                                                    <td class="text-center"><?php echo $row["correct_answers"] ?></td>
-                                                    <td><?php echo $row["date_taken"] ?></td>
-                                                    
-                                                </tr>
-                                            <?php } ?>
-
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                            </div>
-                        </div>
-
-
+                <div class="container-fluid start-exam-card">
+                    <div class="header">
+                        <h1>General Entrance Exam</h1>
+                        <p>Answer all the questions to the best of your ability.</p>
                     </div>
+
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                        <?php
+                        $sql = "SELECT * FROM `questions`";
+                        $result = $object->connect->query($sql);
+
+                        if ($result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                echo '<div class="question">';
+                                echo '<h3>' . htmlspecialchars($row['ques_id']) . '. ' . htmlspecialchars($row['ques']) . '</h3>';
+                                echo '<ul class="options">';
+                                echo '<li><input type="radio" name="answer[' . $row['ques_id'] . ']" value="A" required> ' . htmlspecialchars($row['option_a']) . '</li>';
+                                echo '<li><input type="radio" name="answer[' . $row['ques_id'] . ']" value="B" required> ' . htmlspecialchars($row['option_b']) . '</li>';
+                                echo '<li><input type="radio" name="answer[' . $row['ques_id'] . ']" value="C" required> ' . htmlspecialchars($row['option_c']) . '</li>';
+                                echo '<li><input type="radio" name="answer[' . $row['ques_id'] . ']" value="D" required> ' . htmlspecialchars($row['option_d']) . '</li>';
+                                echo '</ul>';
+                                echo '</div>';
+                            }
+                        } else {
+                            echo '<p>No questions available at the moment.</p>';
+                        }
+                        ?>
+                        <div class="btn-box">
+                            <button type="submit" class="btn">Submit Exam</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -168,7 +216,6 @@ $object->collectUserID();
 </body>
 
 <!--   Core JS Files   -->
-<script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
 <script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
 
 <!--  Checkbox, Radio & Switch Plugins -->
@@ -180,14 +227,10 @@ $object->collectUserID();
 <!--  Notifications Plugin    -->
 <script src="assets/js/bootstrap-notify.js"></script>
 
-<!--  Google Maps Plugin    -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
-
 <!-- Paper Dashboard Core javascript and methods for Demo purpose -->
 <script src="assets/js/paper-dashboard.js"></script>
 
 <!-- Paper Dashboard DEMO methods, don't include it in your project! -->
 <script src="assets/js/demo.js"></script>
-
 
 </html>
